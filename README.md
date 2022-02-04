@@ -5,7 +5,7 @@ Commonly used functions by rphii.
 ## Library
 | Header                  | Source                   | Description                                |
 |-------------------------|--------------------------|--------------------------------------------|
-| [`Rstr.h`](src/r2str.h) | [`Rstr.c`](src/r2str.c)  | basic, quite versatile string structure    |
+| [`Rstr.h`](src/rstr.h)  | [`Rstr.c`](src/rstr.c)   | basic, quite versatile string structure    |
 | [`R2str.h`](src/r2str.h)| [`R2str.c`](src/r2str.c) | handy for fast formattet text file output  |
 
 ## Examples
