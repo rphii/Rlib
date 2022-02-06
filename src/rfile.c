@@ -1,6 +1,6 @@
 #include "rfile.h"
 
-size_t rfile_read(char *filename, Rstr *dump)
+size_t rfile_read(const char *filename, Rstr *dump)
 {
     if(!filename || !dump) return 0;
     FILE *file = fopen(filename, "rb");
@@ -47,7 +47,7 @@ size_t rfile_size(const char *filename)
     return bytes_file;
 }
 
-size_t rfile_write(char *filename, char *dump, size_t len)
+size_t rfile_write(const char *filename, const char *dump, size_t len)
 {
     // open file
     FILE *file = fopen(filename, "wb");

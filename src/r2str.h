@@ -20,6 +20,8 @@ typedef struct R2str
     size_t allocd; 
     /* blocksize of 'allocd' */
     size_t blocksize; 
+    /* sub blocksize */
+    size_t sub_blocksize;
     /* minimumg length of one string to get new substring */
     size_t threshold;
     /* output filename */
@@ -33,7 +35,7 @@ void r2str_print(R2str *r2str);
 void r2str_free(R2str *r2str);
 void r2str_filename(R2str *r2str, char *filename);
 void r2str_recycle(R2str *r2str, bool keep_written);
-bool r2str_append(R2str *r2str, size_t sub_blocksize, char *format, ...);
+bool r2str_append(R2str *r2str, char *format, ...);
 bool r2str_mv_rstr(R2str *r2str, Rstr *rstr);
 bool r2str_cp_rstr(R2str *r2str, Rstr *rstr);
 size_t r2str_file_write(R2str *r2str, bool keep_written);

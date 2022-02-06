@@ -73,7 +73,7 @@ void r2str_recycle(R2str *r2str, bool keep_written)
  * @return true success
  * @return false error
  */
-bool r2str_append(R2str *r2str, size_t sub_blocksize, char *format, ...)
+bool r2str_append(R2str *r2str, char *format, ...)
 {
     if(!r2str || !format) return false;
 
@@ -99,7 +99,7 @@ bool r2str_append(R2str *r2str, size_t sub_blocksize, char *format, ...)
             // initialize the newly acquired memory
             for(size_t i = r2str->allocd; i < required; i++)
             {
-                r2str->rstr[i].blocksize = sub_blocksize ? sub_blocksize : R2STR_DEFAULT_SUB_BLOCKSIZE;
+                r2str->rstr[i].blocksize = r2str->sub_blocksize ? r2str->sub_blocksize : R2STR_DEFAULT_SUB_BLOCKSIZE;
                 r2str->rstr[i].len = 0;
                 r2str->rstr[i].s = 0;
                 r2str->rstr[i].allocd = 0;
