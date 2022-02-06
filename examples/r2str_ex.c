@@ -8,7 +8,7 @@
 
 int main(void)
 {
-    // we will compare R2str against Rstr
+    // we will compare R2str against Rstr (R2str will be incrementally faster than Rstr as the file sizes reach the megabytes+)
     // first R2str
     R2str r2str = {0};
     r2str.blocksize = R2STR_DEFAULT_BLOCKSIZE;
