@@ -55,6 +55,7 @@ void r2str_filename(R2str *r2str, char *filename)
 void r2str_recycle(R2str *r2str, bool keep_written)
 {
     if(!r2str) return;
+    if(!r2str->allocd) return;
     for(size_t i = 0; i <= r2str->count; i++)
     {
         rstr_recycle(&r2str->rstr[i]);
