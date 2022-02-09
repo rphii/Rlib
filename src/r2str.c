@@ -7,6 +7,8 @@
  */
 void r2str_print(R2str *r2str)
 {
+    if(!r2str) return;
+    if(!r2str->allocd) return;
     for(size_t i = 0; i <= r2str->count; i++)
     {
         printf("%.*s", (int)r2str->rstr[i].len, r2str->rstr[i].s);
