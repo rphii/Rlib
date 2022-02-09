@@ -11,4 +11,4 @@ Commonly used functions by rphii.
 ## Examples
 - [`rstr_ex`](examples/rstr_ex.c) Basic usage of Rstr
 - [`r2str_ex`](examples/r2str_ex.c) Basic usage of R2str
-- [`writecomp](examples/writecomp.c) Benchmark of writing to files
+- [`writecomp`](examples/writecomp.c) Benchmark of writing to files
