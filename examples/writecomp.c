@@ -5,7 +5,7 @@
 #include "../src/rfile.h"
 
 #define BYTES   250000000
-#define FILENAME "NumbersAreCool"
+#define FILENAME "Writecomp"
 #define WRITETIMES  10000
 
 int main(void)
@@ -18,7 +18,6 @@ int main(void)
     r2str.blocksize = R2STR_DEFAULT_BLOCKSIZE;
     r2str.threshold = R2STR_DEFAULT_THRESHOLD;
     r2str.sub_blocksize = R2STR_DEFAULT_SUB_BLOCKSIZE;
-    r2str_filename(&r2str, FILENAME"_chunk.txt");
     // create the two strings
     for(size_t i = 0; i < BYTES; i++)
     {
@@ -34,7 +33,7 @@ int main(void)
     clock_t t_0_chunk = clock();
     for(size_t i = 0; i < WRITETIMES; i++)
     {
-        r2str_file_write(&r2str, false);
+        r2str_file_write(&r2str, FILENAME"_chunk.txt");
     }
     clock_t t_E_chunk = clock();
     r2str_free(&r2str);

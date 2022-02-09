@@ -3,7 +3,7 @@
 #include "../src/r2str.h"
 #include "../src/rfile.h"
 
-#define COUNT 10000000
+#define COUNT 1000000
 #define FILENAME "NumbersAreCool"
 
 int main(void)
@@ -15,13 +15,12 @@ int main(void)
     r2str.threshold = R2STR_DEFAULT_THRESHOLD;
     r2str.sub_blocksize = R2STR_DEFAULT_SUB_BLOCKSIZE;
     clock_t t_0_r2str = clock();
-    r2str_filename(&r2str, FILENAME"_r2str.txt");
     for(size_t i = 0; i < COUNT; i++)
     {
         r2str_append(&r2str, "The number %llu rocks!\n", i);
     }
     clock_t t_M_r2str = clock();
-    size_t length = r2str_file_write(&r2str, false);
+    size_t length = r2str_file_write(&r2str, FILENAME"_r2str.txt");
     clock_t t_E_r2str = clock();
     printf("===== R2str string stats =====\n");
     printf("Final string length: %llu\n", length);
