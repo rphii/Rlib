@@ -1,8 +1,16 @@
 #ifndef RFILE_H
 
+/////////////
+// HEADERS //
+/////////////
+
 #include <stdio.h>
 #include <stdlib.h>
 #include "rstr.h"
+
+////////////////////////////////
+// PUBLIC FUNCTION PROTOTYPES //
+////////////////////////////////
 
 size_t rfile_read(const char *filename, Rstr *dump);
 size_t rfile_size(const char *filename);

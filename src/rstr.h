@@ -1,11 +1,23 @@
 #ifndef RSTR_H
 
+/////////////
+// HEADERS //
+/////////////
+
 #include <stdlib.h>
 #include <stdbool.h>
 #include <stdarg.h>
 #include <stdio.h>
 
+/////////////
+// DEFINES //
+/////////////
+
 #define RSTR_DEFAULT_BLOCKSIZE  ((size_t)0x10)
+
+////////////////
+// STRUCTURES //
+////////////////
 
 /**
  * @brief Rstr is a basic, quite versatile string structure
@@ -24,10 +36,15 @@ typedef struct Rstr
 }
 Rstr;
 
+////////////////////////////////
+// PUBLIC FUNCTION PROTOTYPES //
+////////////////////////////////
+
 void rstr_free(Rstr *rstr);
 void rstr_recycle(Rstr *rstr);
 bool rstr_append(Rstr *rstr, char *format, ...);
 bool rstr_append_va(Rstr *rstr, char *format, va_list argp);
+
 
 #define RSTR_H
 #endif
