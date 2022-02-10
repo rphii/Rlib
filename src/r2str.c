@@ -1,5 +1,35 @@
 #include "r2str.h"
 
+/////////////////////////////////
+// PRIVATE FUNCTION PROTOTYPES //
+/////////////////////////////////
+
+static void static_r2str_zero(R2str *r2str);
+
+//////////////////////////////////////
+// PRIVATE FUNCTION IMPLEMENTATIONS //
+//////////////////////////////////////
+
+/**
+ * @brief Set everything within an R2str to zero.
+ * 
+ * @param r2str 
+ */
+static void static_r2str_zero(R2str *r2str)
+{
+    if(!r2str) return;
+    r2str->allocd = 0;
+    r2str->blocksize = 0;
+    r2str->count = 0;
+    r2str->rstr = 0;
+    r2str->sub_blocksize = 0;
+    r2str->threshold = 0;
+}
+
+/////////////////////////////////////
+// PUBLIC FUNCTION IMPLEMENTATIONS //
+/////////////////////////////////////
+
 /**
  * @brief Print the whole of an R2str's string. Highly advised to not use on large strings (as it may take quite a while to print)
  * 
@@ -28,10 +58,7 @@ void r2str_free(R2str *r2str)
         rstr_free(&r2str->rstr[i]);
     }
     free(r2str->rstr);
-    r2str->rstr = 0;
-    r2str->allocd = 0;
-    r2str->blocksize = 0;
-    r2str->count = 0;
+    static_r2str_zero(r2str);
 }
 
 /**
@@ -157,6 +184,7 @@ size_t r2str_file_write(R2str *r2str, const char *filename)
     for(size_t i = 0; i <= r2str->count; i++)
     {
         written += fwrite(r2str->rstr[i].s, sizeof(char), r2str->rstr[i].len, file);
+        fflush(file);
     }
 
     // close file
