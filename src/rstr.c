@@ -1,26 +1,65 @@
-
 #include "rstr.h"
 
-static void static_rstr_zero(Rstr *str)
+/////////////////////////////////
+// PRIVATE FUNCTION PROTOTYPES //
+/////////////////////////////////
+
+static void static_rstr_zero(Rstr *rstr);
+
+//////////////////////////////////////
+// PRIVATE FUNCTION IMPLEMENTATIONS //
+//////////////////////////////////////
+
+/**
+ * @brief set everything witin Rstr to zero
+ * 
+ * @param rstr 
+ */
+static void static_rstr_zero(Rstr *rstr)
 {
-    if(!str) return;
-    str->allocd = 0;
-    str->blocksize = 0;
-    str->len = 0;
-    str->s = 0;
+    if(!rstr) return;
+    rstr->allocd = 0;
+    rstr->blocksize = 0;
+    rstr->len = 0;
+    rstr->s = 0;
 }
 
+/////////////////////////////////////
+// PUBLIC FUNCTION IMPLEMENTATIONS //
+/////////////////////////////////////
+
+/**
+ * @brief free an Rstr's used memory
+ * 
+ * @param rstr 
+ */
 void rstr_free(Rstr *rstr)
 {
     free(rstr->s);
     static_rstr_zero(rstr);
 }
 
+/**
+ * @brief Recycle an Rstr, meaning, we keep the assigned memory, but we set the length to 0.
+ *        This way, we can append faster next time, since we don't need to bother about
+ *        using up memory.
+ * 
+ * @param rstr 
+ */
 void rstr_recycle(Rstr *rstr)
 {
     rstr->len = 0;
 }
 
+/**
+ * @brief Append a formatted string onto an Rstr.
+ * 
+ * @param rstr 
+ * @param format 
+ * @param ... 
+ * @return true success
+ * @return false failure
+ */
 bool rstr_append(Rstr *rstr, char *format, ...)
 {
     if(!rstr || !format) return false;
@@ -56,11 +95,20 @@ bool rstr_append(Rstr *rstr, char *format, ...)
     return true;
 }
 
+/**
+ * @brief Append a formatted string onto an Rstr.
+ *        !!! caller has to va_start and va_end before / after calling this function !!!
+ * 
+ * @param rstr 
+ * @param format 
+ * @param argp 
+ * @return true success
+ * @return false failure
+ */
 bool rstr_append_va(Rstr *rstr, char *format, va_list argp)
 {
     if(!rstr) return false;
 
-    /* caller has to va_start and va_end before / after calling this function! */
     va_list argl = 0;
     va_copy(argl, argp); /* TODO check for error */
     size_t len_app = vsnprintf(0, 0, format, argl);

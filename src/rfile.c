@@ -1,5 +1,16 @@
 #include "rfile.h"
 
+/////////////////////////////////////
+// PUBLIC FUNCTION IMPLEMENTATIONS //
+/////////////////////////////////////
+
+/**
+ * @brief Read from a file into an Rstr
+ * 
+ * @param filename 
+ * @param dump 
+ * @return size_t count of bytes read
+ */
 size_t rfile_read(const char *filename, Rstr *dump)
 {
     if(!filename || !dump) return 0;
@@ -30,7 +41,12 @@ size_t rfile_read(const char *filename, Rstr *dump)
     return bytes_read;
 }
 
-
+/**
+ * @brief Get the size of a file (I'm sure there is a better way to do it~)
+ * 
+ * @param filename 
+ * @return size_t count of bytes of the file
+ */
 size_t rfile_size(const char *filename)
 {
     if(!filename) return 0;
@@ -47,6 +63,14 @@ size_t rfile_size(const char *filename)
     return bytes_file;
 }
 
+/**
+ * @brief Write a string to a file
+ * 
+ * @param filename 
+ * @param dump the string to be written
+ * @param len the length of the string to be written
+ * @return size_t count of bytes read
+ */
 size_t rfile_write(const char *filename, const char *dump, size_t len)
 {
     // open file
@@ -55,6 +79,7 @@ size_t rfile_write(const char *filename, const char *dump, size_t len)
 
     // write file
     size_t result = fwrite(dump, sizeof(char), len, file);
+    fflush(file);
 
     // close file
     fclose(file);
