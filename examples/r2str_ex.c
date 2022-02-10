@@ -23,11 +23,11 @@ int main(void)
     size_t length = r2str_file_write(&r2str, FILENAME"_r2str.txt");
     clock_t t_E_r2str = clock();
     printf("===== R2str string stats =====\n");
-    printf("Final string length: %llu\n", length);
-    printf("Allocd: %llu\n", r2str.allocd);
-    printf("Blocksize: %llu\n", r2str.blocksize);
-    printf("Count: %llu\n", r2str.count);
-    printf("Threshold: %llu\n", r2str.threshold);
+    printf("Final string length: %zu\n", length);
+    printf("Allocd: %zu\n", r2str.allocd);
+    printf("Blocksize: %zu\n", r2str.blocksize);
+    printf("Count: %zu\n", r2str.count);
+    printf("Threshold: %zu\n", r2str.threshold);
     r2str_free(&r2str);
     clock_t t_F_r2str = clock();
     printf("===== R2str time stats =====\n");
@@ -42,15 +42,15 @@ int main(void)
     size_t t_0_rstr = clock();
     for(size_t i = 0; i < COUNT; i++)
     {
-        rstr_append(&rstr, "The number %llu rocks!\n", i);
+        rstr_append(&rstr, "The number %zu rocks!\n", i);
     }
     size_t t_M_rstr = clock();
     length = rfile_write(FILENAME"_rstr.txt", rstr.s, rstr.len);
     size_t t_E_rstr = clock();
     printf("===== Rstr string stats =====\n");
-    printf("Final string length: %llu\n", length);
-    printf("Allocd: %llu\n", rstr.allocd);
-    printf("Blocksize: %llu\n", rstr.blocksize);
+    printf("Final string length: %zu\n", length);
+    printf("Allocd: %zu\n", rstr.allocd);
+    printf("Blocksize: %zu\n", rstr.blocksize);
     rstr_free(&rstr);
     size_t t_F_rstr = clock();
     printf("===== Rstr time stats =====\n");
