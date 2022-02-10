@@ -87,11 +87,13 @@ size_t rfile_write(const char *filename, const char *dump, size_t len, size_t ch
     else
     {
         size_t i = 0;
-        for(i = 0; i + chunk < len; i += chunk)
+        len -= chunk;   // hack to hopefully reduce calculation overhead
+        for(i = 0; i < len; i += chunk)
         {
             result += fwrite(&dump[i], sizeof(char), chunk, file);
             fflush(file);
         }
+        len += chunk;   // and unhack
         result += fwrite(&dump[i], sizeof(char), len - i, file);
     }
     
