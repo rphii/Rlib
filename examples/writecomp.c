@@ -1,50 +1,45 @@
 
 #include <time.h>
 #include <ctype.h>
-#include "../src/r2str.h"
 #include "../src/rfile.h"
 
 #define BYTES   250000000
 #define FILENAME "Writecomp"
 #define WRITETIMES  10000
+#define CHUNK_SIZE  0x100000
 
 int main(void)
 {
-    // we will compare R2str against Rstr (R2str will be incrementally faster than Rstr as the file sizes reach the megabytes )
-    // first R2str
-    char *bulk = malloc(BYTES);
-    if(!bulk) return 0;
-    R2str r2str = {0};
-    r2str.blocksize = R2STR_DEFAULT_BLOCKSIZE;
-    r2str.threshold = R2STR_DEFAULT_THRESHOLD;
-    r2str.sub_blocksize = R2STR_DEFAULT_SUB_BLOCKSIZE;
-    // create the two strings
+    char *str = malloc(BYTES);
+    if(!str) return 0;
+    
+    // create the strings
+    printf("Creating the string....\n");
     for(size_t i = 0; i < BYTES; i++)
     {
         // get a random character
         char c = 0;
         while(!isgraph(c)) c = rand() % 256;
-        // append to the strings
-        r2str_append(&r2str, "%c", c);
-        bulk[i] = c;
+        str[i] = c;
     }
-    printf("Created the strings, we will now write to the files\n");
+    printf("Created the string, we will now write to the files...\n");
     // write in chunk mode
+    printf("Writing to %s...\n", FILENAME"_chunk.txt");
     clock_t t_0_chunk = clock();
     for(size_t i = 0; i < WRITETIMES; i++)
     {
-        r2str_file_write(&r2str, FILENAME"_chunk.txt");
+        rfile_write(FILENAME"_chunk.txt", str, BYTES, CHUNK_SIZE);
     }
     clock_t t_E_chunk = clock();
-    r2str_free(&r2str);
     // write in bulk mode
+    printf("Writing to %s...\n", FILENAME"_bulk.txt");
     clock_t t_0_bulk = clock();
     for(size_t i = 0; i < WRITETIMES; i++)
     {
-        rfile_write(FILENAME"_bulk.txt", bulk, BYTES);
+        rfile_write(FILENAME"_bulk.txt", str, BYTES, 0);
     }
     clock_t t_E_bulk = clock();
-    free(bulk);
+    free(str);
 
     // more thorough writing time stats
     printf("===== Writing time stats =====\n");

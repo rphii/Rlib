@@ -69,19 +69,34 @@ size_t rfile_size(const char *filename)
  * @param filename 
  * @param dump the string to be written
  * @param len the length of the string to be written
+ * @param chunk size of write chunks. Set 0 to write everything at once
  * @return size_t count of bytes read
  */
-size_t rfile_write(const char *filename, const char *dump, size_t len)
+size_t rfile_write(const char *filename, const char *dump, size_t len, size_t chunk)
 {
     // open file
     FILE *file = fopen(filename, "wb");
     if(!file) return 0;
 
     // write file
-    size_t result = fwrite(dump, sizeof(char), len, file);
-    fflush(file);
-
+    size_t result = 0;
+    if(!chunk)
+    {
+        result = fwrite(dump, sizeof(char), len, file);
+    }
+    else
+    {
+        size_t i = 0;
+        for(i = 0; i + chunk < len; i += chunk)
+        {
+            result += fwrite(&dump[i], sizeof(char), chunk, file);
+            fflush(file);
+        }
+        result += fwrite(&dump[i], sizeof(char), len - i, file);
+    }
+    
     // close file
+    fflush(file);
     fclose(file);
 
     return result;

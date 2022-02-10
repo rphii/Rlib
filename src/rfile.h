@@ -14,8 +14,7 @@
 
 size_t rfile_read(const char *filename, Rstr *dump);
 size_t rfile_size(const char *filename);
-size_t rfile_write(const char *filename, const char *dump, size_t len);
-
+size_t rfile_write(const char *filename, const char *dump, size_t len, size_t chunk);
 
 #define RFILE_H
 #endif

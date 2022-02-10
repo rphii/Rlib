@@ -45,7 +45,7 @@ int main(void)
         rstr_append(&rstr, "The number %zu rocks!\n", i);
     }
     size_t t_M_rstr = clock();
-    length = rfile_write(FILENAME"_rstr.txt", rstr.s, rstr.len);
+    length = rfile_write(FILENAME"_rstr.txt", rstr.s, rstr.len, 0);
     size_t t_E_rstr = clock();
     printf("===== Rstr string stats =====\n");
     printf("Final string length: %zu\n", length);
