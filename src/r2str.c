@@ -31,21 +31,6 @@ static void static_r2str_zero(R2str *r2str)
 /////////////////////////////////////
 
 /**
- * @brief Print the whole of an R2str's string. Highly advised to not use on large strings (as it may take quite a while to print)
- * 
- * @param r2str 
- */
-void r2str_print(R2str *r2str)
-{
-    if(!r2str) return;
-    if(!r2str->allocd) return;
-    for(size_t i = 0; i <= r2str->count; i++)
-    {
-        printf("%.*s", (int)r2str->rstr[i].len, r2str->rstr[i].s);
-    }
-}
-
-/**
  * @brief Free everything in an R2str
  * 
  * @param r2str 
@@ -125,6 +110,35 @@ bool r2str_append(R2str *r2str, char *format, ...)
 }
 
 /**
+ * @brief Write an R2str's contents to a file. If 'written' is not zero, conents will be appended to the file.
+ * 
+ * @param r2str 
+ * @param keep_written set this to true, if you wish to keep the 'written' variable
+ * @return size_t length of total string
+ */
+size_t r2str_file_write(R2str *r2str, const char *filename)
+{
+    if(!r2str) return 0;
+    if(!r2str->allocd) return 0;
+
+    // open file
+    FILE *file = fopen(filename, "wb");
+    if(!file) return 0;
+
+    // write file
+    size_t written = 0;
+    for(size_t i = 0; i <= r2str->count; i++)
+    {
+        written += fwrite(r2str->rstr[i].s, sizeof(char), r2str->rstr[i].len, file);
+        fflush(file);
+    }
+
+    // close file
+    fclose(file);
+    return written;
+}
+
+/**
  * @brief Move the contents of an R2str to an ordinary Rstr
  * 
  * @param r2str 
@@ -164,30 +178,16 @@ bool r2str_cp_rstr(R2str *r2str, Rstr *rstr)
 }
 
 /**
- * @brief Write an R2str's contents to a file. If 'written' is not zero, conents will be appended to the file.
+ * @brief Print the whole of an R2str's string. Highly advised to not use on large strings (as it may take quite a while to print)
  * 
  * @param r2str 
- * @param keep_written set this to true, if you wish to keep the 'written' variable
- * @return size_t length of total string
  */
-size_t r2str_file_write(R2str *r2str, const char *filename)
+void r2str_print(R2str *r2str)
 {
-    if(!r2str) return 0;
-    if(!r2str->allocd) return 0;
-
-    // open file
-    FILE *file = fopen(filename, "wb");
-    if(!file) return 0;
-
-    // write file
-    size_t written = 0;
+    if(!r2str) return;
+    if(!r2str->allocd) return;
     for(size_t i = 0; i <= r2str->count; i++)
     {
-        written += fwrite(r2str->rstr[i].s, sizeof(char), r2str->rstr[i].len, file);
-        fflush(file);
+        printf("%.*s", (int)r2str->rstr[i].len, r2str->rstr[i].s);
     }
-
-    // close file
-    fclose(file);
-    return written;
 }

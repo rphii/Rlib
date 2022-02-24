@@ -43,13 +43,13 @@ R2str;
 // PUBLIC FUNCTION PROTOTYPES //
 ////////////////////////////////
 
-void r2str_print(R2str *r2str);
 void r2str_free(R2str *r2str);
 void r2str_recycle(R2str *r2str);
 bool r2str_append(R2str *r2str, char *format, ...);
+size_t r2str_file_write(R2str *r2str, const char *filename);
 bool r2str_mv_rstr(R2str *r2str, Rstr *rstr);
 bool r2str_cp_rstr(R2str *r2str, Rstr *rstr);
-size_t r2str_file_write(R2str *r2str, const char *filename);
+void r2str_print(R2str *r2str);
 
 
 #define R2STR_H
