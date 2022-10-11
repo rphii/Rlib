@@ -25,12 +25,9 @@ static bool static_map_indexing(Map *map, uintptr_t key, MapBucket **bucket, siz
 {
     // calculate hash for the key
     size_t hash = map->hash(key) % map->slots;
-    // NEWEST PRINTF 
-    // printf("hash: %zu\n", hash);
     // check if the key exists
     *bucket = &map->b[hash];
     bool exist = false;
-    // printf("bucket->used = %zu\n", (*bucket)->used);
     if(map->size.key)
     {
         void *key_p = (void *)key;
@@ -56,7 +53,6 @@ static bool static_map_indexing(Map *map, uintptr_t key, MapBucket **bucket, siz
     }
     else for(*index = 0; *index < (*bucket)->used; (*index)++)
     {
-        // printf("[%zu] %zu == %zu\n", *index, (*bucket)->node[*index].key, key);
         if((*bucket)->node[*index].key != key) continue;
         exist = true;
         break;
@@ -121,17 +117,13 @@ bool map_set(Map *map, uintptr_t key, uintptr_t val)
     size_t index = 0;
     MapBucket *bucket = 0;
     bool exist = static_map_indexing(map, key, &bucket, &index);
-    // NEWEST PRINTF 
-    // printf("exist = %s\n", exist ? "true" : "false");
     // add node if not exist
     if(!exist)
     {
         size_t is_count = ((bucket->used + map->batch - 1) / map->batch) * map->batch;
         size_t new_count = (bucket->used / map->batch + 1) * map->batch;
-        // NEWEST PRINTF printf("is_count:%zu / new_count:%zu\n", is_count, new_count);
         if(new_count > is_count)
         {
-            // NEWEST PRINTF printf("bytes alloc = %zu * %zu\n", new_count , sizeof(*bucket->node));
             void *temp = realloc(bucket->node, new_count * sizeof(*bucket->node));
             if(!temp) return false;
             // initialize new memory
@@ -140,8 +132,6 @@ bool map_set(Map *map, uintptr_t key, uintptr_t val)
         }
         // increment used
         bucket->used++;
-        // NEWEST PRINTF 
-        // printf("bucket->used:%zu / map->batch:%zu\n", bucket->used, map->batch);
     }
     MapNode *node = &bucket->node[index];
     // assign key
@@ -192,7 +182,6 @@ bool map_get(Map *map, uintptr_t key, uintptr_t *val_p)
     bool exist = static_map_indexing(map, key, &bucket, &index);
     if(!exist) return false;
     // assign to val_p if it does
-    // printf("get: *val_p:%zx = bucket->node[%zu].val:%zu\n", *val_p, index, bucket->node[index].val);
     if(map->size.val)
     {
         if(map->av) result &= map->av(val_p, bucket->node[index].val_p);
@@ -235,7 +224,6 @@ bool map_del(Map *map, uintptr_t key)
     // possibly reallocate
     size_t was_count = ((bucket->used + map->batch) / map->batch) * map->batch;
     size_t new_count = ((bucket->used + map->batch - 1) / map->batch) * map->batch;
-    // printf("was_count = %zu / new_count = %zu\n", was_count, new_count);
     // don't do realloc with size of 0 because it may be undefined
     if(new_count && new_count < was_count)
     {
@@ -324,7 +312,5 @@ printf("- total used subslots: %zu\n", total_used);
 printf("- max use of subslots: %zu\n", max_used);
 printf("- avg use of subslots: %.4f\n", avg_used);
 printf("- min use of subslots: %zu\n", min_used);
-    // printf("- min required (re)allocations: %zu\n", allocs_made);
-    // printf("- bytes allocated: %zu\n", alloced_bytes);
 }
 
