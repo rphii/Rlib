@@ -36,16 +36,29 @@ int main(void)
         rstr_recycle(&key);
         rstr_recycle(&val);
         rstr_append(&key, "Key %d", i);
-        rstr_append(&val, "Value %s", rand_str);
+        rstr_append(&val, "Value %d %s", i, rand_str);
         map_set(&m, (uintptr_t)&key, (uintptr_t)&val);
     }
     for(int i = 0; i < amount; i++)
     {
+        if(i % 5 == 0) continue;
         rstr_recycle(&key);
         rstr_append(&key, "Key %d", i);
+        map_del(&m, (uintptr_t)&key);
+    }
+    for(int i = 0; i < amount; i++)
+    {
+        rstr_recycle(&key);
+        rstr_recycle(&val);
+        rstr_append(&key, "Key %d", i);
         bool exist = map_get(&m, (uintptr_t)&key, (uintptr_t *)&val);
-        if(exist) printf("m['%.*s'] = %.*s\n", (int)key.len, key.s, (int)val.len, val.s);
-        else printf("m[%.*s] = (null)\n", (int)key.len, key.s);
+        if(exist) printf("m['%.*s'] = '%.*s'\n", (int)key.len, key.s, (int)val.len, val.s);
+        else printf("m['%.*s'] = (null)\n", (int)key.len, key.s);
+    }
+    MapIter mi = MAP_ITER(&m);
+    while(map_iter(&mi, (uintptr_t *)&key, (uintptr_t *)&val))
+    {
+        printf("iter: m['%.*s'] = '%.*s'\n", (int)key.len, key.s, (int)val.len, val.s);
     }
 
     rstr_free(&key);

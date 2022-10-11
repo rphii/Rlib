@@ -21,10 +21,21 @@ int main(void)
     }
     for(int i = 0; i < amount; i++)
     {
-        int got = 0;
-        bool exist = map_get(&m, i, (uintptr_t *)&got);
-        if(exist) printf("m[%d] = %d\n", i, got);
+        if(i % 5 == 0) continue;
+        map_del(&m, i);
+    }
+    for(int i = 0; i < amount; i++)
+    {
+        uintptr_t got = 0;
+        bool exist = map_get(&m, i, &got);
+        if(exist) printf("m[%d] = %d\n", i, (int)got);
         else printf("m[%d] = (null)\n", i);
+    }
+    MapIter mi = MAP_ITER(&m);
+    uintptr_t key, val;
+    while(map_iter(&mi, &key, &val))
+    {
+        printf("iter: m[%d] = %d\n", (int)key, (int)val);
     }
 
     map_free(&m);
