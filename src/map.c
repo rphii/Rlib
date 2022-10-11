@@ -184,6 +184,7 @@ bool map_get(Map *map, uintptr_t key, uintptr_t *val_p)
     // assign to val_p if it does
     if(map->size.val)
     {
+        // maybe don't copy the value, but just return the address??
         if(map->av) result &= map->av(val_p, bucket->node[index].val_p);
         else memcpy(val_p, bucket->node[index].val_p, map->size.val);
     }
