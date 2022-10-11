@@ -15,4 +15,4 @@ Commonly used functions by rphii.
 - [`r2str_ex`](examples/r2str_ex.c) Basic usage of R2str
 - [`writecomp`](examples/writecomp.c) Benchmark of writing to files
 - [`map1_ex`](examples/map1_ex.c) Using Map with basic types
-- [`map2_ex`](examples/map2_ex.c) Using Map with custon structure (Rstr)
+- [`map2_ex`](examples/map2_ex.c) Using Map with custom structure (Rstr)
