@@ -45,6 +45,9 @@ void rstr_recycle(Rstr *rstr);
 bool rstr_append(Rstr *rstr, char *format, ...);
 bool rstr_append_va(Rstr *rstr, char *format, va_list argp);
 
+size_t rstr_djb2(Rstr *rstr);
+int rstr_cmp(Rstr *a, Rstr *b);
+bool rstr_cpy(Rstr *a, Rstr *b);
 
 #define RSTR_H
 #endif

@@ -137,3 +137,56 @@ bool rstr_append_va(Rstr *rstr, char *format, va_list argp)
     else return false;  // encoding error or string hasn't been fully written
     return true;
 }
+
+/**
+ * @brief hashing function 
+ * 
+ * @param rstr 
+ * @return size_t 
+ */
+size_t rstr_djb2(Rstr *rstr)
+{
+    size_t hash = 5381;
+    unsigned char c;
+    size_t i = 0;
+    while(i < rstr->len)
+    {
+        c = rstr->s[i++];
+        // printf("%c", c);
+        hash = ((hash << 5) + hash) + c; /* hash * 33 + c */
+    }
+    return hash;
+}
+
+/**
+ * @brief compare two rstr's for equality.
+ * 
+ * @param a rstr A
+ * @param b rstr B
+ * @return same as memcmp
+ */
+int rstr_cmp(Rstr *a, Rstr *b)
+{
+    if(!a || !b) return false;
+    if(a->len != b->len) return false;
+    return memcmp(a->s, b->s, b->len);
+}
+
+/**
+ * @brief copy the content from one rstr to another rstr
+ * 
+ * @param a destination
+ * @param b source
+ * @return true success
+ * @return false an error occured
+ */
+bool rstr_cpy(Rstr *a, Rstr *b)
+{
+    if(!a || !b) return false;
+    // printf("rstr_cpy:b->s:%s / a->len = %zu\n", b->s, a->len);
+    rstr_recycle(a);
+    a->blocksize = b->blocksize;
+    bool result = rstr_append(a, "%.*s", b->len, b->s);
+    // printf("rstr_cpy:a->s:%s / a->len = %zu\n", a->s, a->len);
+    return result;
+}
