@@ -26,7 +26,7 @@
  * @param free_v (optional**) function to free value-type
  * 
  * @note optional* if you operate on basic types, such as int or char, you don't need it.
- * @note optional** if your custom structure requires extra steps to copy/free, basic types don't need it
+ * @note optional** if your custom structure requires extra steps to copy/free; basic types don't need it
  */
 #define MAP_INIT(n_slots,n_batch,hash_f,cmp_f,size_k,assign_k,free_k,size_v,assign_v,free_v) (Map){\
     .batch = n_batch ? n_batch : MAP_DEFAULT_BATCH,\
