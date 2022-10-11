@@ -27,7 +27,7 @@ typedef struct Rstr
 {
     /* the string */
     char *s;
-    /* length in bytes */
+    /* length of string (without '\0') */
     size_t len;
     /* how many bytes allocated so far */
     size_t allocd;
