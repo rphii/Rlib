@@ -48,5 +48,7 @@ int main(void)
         else printf("m[%.*s] = (null)\n", (int)key.len, key.s);
     }
 
+    rstr_free(&key);
+    rstr_free(&val);
     map_free(&m);
 }
