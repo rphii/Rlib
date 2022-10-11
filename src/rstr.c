@@ -1,3 +1,4 @@
+#include <string.h>
 #include "rstr.h"
 
 /////////////////////////////////
@@ -167,8 +168,8 @@ size_t rstr_djb2(Rstr *rstr)
  */
 int rstr_cmp(Rstr *a, Rstr *b)
 {
-    if(!a || !b) return false;
-    if(a->len != b->len) return false;
+    if(!a || !b) return -1;
+    if(a->len != b->len) return -1;
     return memcmp(a->s, b->s, b->len);
 }
 
@@ -186,7 +187,7 @@ bool rstr_cpy(Rstr *a, Rstr *b)
     // printf("rstr_cpy:b->s:%s / a->len = %zu\n", b->s, a->len);
     rstr_recycle(a);
     a->blocksize = b->blocksize;
-    bool result = rstr_append(a, "%.*s", b->len, b->s);
+    bool result = rstr_append(a, "%.*s", (int)b->len, b->s);
     // printf("rstr_cpy:a->s:%s / a->len = %zu\n", a->s, a->len);
     return result;
 }
