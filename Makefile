@@ -19,6 +19,16 @@ TST_DIR = examples
 # name of the library
 LIB_NAME  := rlib
 
+# cleaning settings
+RM = rm		# unix cleaning
+DEL = del	# windows cleaning
+
+ifeq ($(OS),Windows_NT)
+EXE = .exe
+else
+EXE = 
+endif
+
 ### Start of all necessary files ###
 
 # .c files
@@ -34,6 +44,10 @@ TST_OBJ := $(addprefix $(OBJ_DIR)/,$(addprefix $(TST_DIR)_,$(notdir $(TST_SRC:.c
 LIB_OUT  := $(LIB_DIR)/lib$(LIB_NAME).a
 # output files
 TST_OUT := $(TST_NODIR:.c=)
+# TST_EXE := $(addsuffix $(EXE),$(TST_NODIR:.c=))
+
+# cleaning objects
+# WDELOBJ = $(SRC:$(SRC_DIR)/%.c=$(OBJ_DIR)\\%.o)
 
 ### End of all necessary files ###
 
@@ -59,3 +73,16 @@ $(OBJ_DIR)/$(SRC_DIR)_%.o: $(SRC_DIR)/%.c $(HDR_DIR)/%.h
 	$(CC) $(CFLAGS) -c -o $@ $<
 
 ### End of building rules ###
+
+# # Cleans complete project
+# .PHONY: clean
+
+# ifeq ($(OS),Windows_NT)
+# #################### Cleaning rules for Windows OS #####################
+# clean:
+# 	$(DEL) $(LIB_OBJ) $(DEP) $(APPNAME)$(EXE)
+# else
+# ################### Cleaning rules for Unix-based OS ###################
+# clean:
+# 	$(RM) $(LIB_OBJ) $(DEP) $(APPNAME)
+# endif
