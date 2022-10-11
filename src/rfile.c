@@ -35,6 +35,7 @@ size_t rfile_read(const char *filename, Rstr *dump)
     size_t bytes_read = fread(dump->s, 1, bytes_file, file);
     if(bytes_file != bytes_read) return 0;
     dump->s[bytes_read] = 0;
+    dump->len = bytes_read;
     
     // close file
     fclose(file);
