@@ -48,7 +48,7 @@
 ////////////////////////////// 
 
 typedef size_t (*MapHash)(uintptr_t a);         // takes one parameter and returns the calculated hash for that
-typedef bool (*MapCmp)(void *a, void *b);       // compares two values for equality (true if equal)
+typedef bool (*MapCmp)(void *a, void *b);       // compares two values for equality (zero if equal)
 typedef bool (*MapAssign)(void *a, void *b);    // assigns one value to another; c equivalent: a=b;
 typedef void (*MapFree)(void *a);               // free a value; c equivalend: free(a);
 
