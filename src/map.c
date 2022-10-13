@@ -11,6 +11,32 @@
 // PRIVATE FUNCTION IMPLEMENTATIONS //
 //////////////////////////////////////
 
+static inline size_t static_map_size_key(Map *map)
+{
+    return map->size.key ? map->size.key : sizeof(map->b->node->key);
+}
+
+static inline size_t static_map_size_val(Map *map)
+{
+    return map->size.val ? map->size.val : sizeof(map->b->node->val);
+}
+
+static inline MapNode *static_map_node_key(Map *map, MapBucket *bucket, size_t index)
+{
+    size_t size_key = static_map_size_key(map);
+    size_t size_val = static_map_size_val(map);
+    size_t size_tot = size_key + size_val;
+    return (MapNode *)((uint8_t *)bucket->node + index * size_tot);
+}
+
+static inline MapNode *static_map_node_val(Map *map, MapBucket *bucket, size_t index)
+{
+    size_t size_key = static_map_size_key(map);
+    size_t size_val = static_map_size_val(map);
+    size_t size_tot = size_key + size_val;
+    return (MapNode *)((uint8_t *)bucket->node + index * size_tot + size_key);
+}
+
 /**
  * @brief 
  * 
@@ -21,18 +47,13 @@
  * @return true 
  * @return false 
  */
-static bool static_map_indexing(Map *map, uintptr_t key, MapBucket **bucket, size_t *index8)
+static bool static_map_indexing(Map *map, uintptr_t key, MapBucket **bucket, size_t *index)
 {
     // calculate hash for the key
     size_t hash = map->hash(key) % map->slots;
     // set up bucket and exist variable
-    size_t index = 0;
     *bucket = &map->b[hash];
     bool exist = false;
-    // calculate size_tot of one element
-    size_t size_key = map->size.key ? map->size.key : sizeof(map->b->node->key);
-    size_t size_val = map->size.val ? map->size.val : sizeof(map->b->node->val);
-    size_t size_tot = size_key + size_val;
     // check if the key exists
     if(map->size.key)
     {
@@ -40,9 +61,9 @@ static bool static_map_indexing(Map *map, uintptr_t key, MapBucket **bucket, siz
         if(!key_p) return false;
         if(map->cmp)
         {
-            for(index = 0; index < (*bucket)->used; (index)++)
+            for(*index = 0; *index < (*bucket)->used; (*index)++)
             {
-                MapNode *node = (MapNode *)((uint8_t *)(*bucket)->node + index * size_tot);
+                MapNode *node = static_map_node_key(map, *bucket, *index);
                 if(map->cmp(&node->key_p, key_p)) continue;
                 exist = true;
                 break;
@@ -50,35 +71,37 @@ static bool static_map_indexing(Map *map, uintptr_t key, MapBucket **bucket, siz
         }
         else
         {
-            for(index = 0; index < (*bucket)->used; (index)++)
+            for(*index = 0; *index < (*bucket)->used; (*index)++)
             {
-                MapNode *node = (MapNode *)((uint8_t *)(*bucket)->node + index * size_tot);
+                MapNode *node = static_map_node_key(map, *bucket, *index);
                 if(memcmp(&node->key_p, key_p, map->size.key)) continue;
                 exist = true;
                 break;
             }
         }
     }
-    else for(index = 0; index < (*bucket)->used; (index)++)
+    else for(*index = 0; *index < (*bucket)->used; (*index)++)
     {
-        MapNode *node = (MapNode *)((uint8_t *)(*bucket)->node + index * size_tot);
+        MapNode *node = static_map_node_key(map, *bucket, *index);
         if(node->key != key) continue;
         exist = true;
         break;
     }
-    *index8 = index * size_tot;
+    // *index = index * size_tot;
     return exist;
 }
 
-static inline size_t static_map_size_key(Map *map)
-{
-    return map->size.key ? map->size.key : sizeof(map->b->node->key);
-}
 
-static inline size_t static_map_size_val(Map *map)
-{
-    return map->size.val ? map->size.val : sizeof(map->b->node->val);
-}
+// static inline MapNode *static_map_node_key8(MapBucket *bucket, size_t index8)
+// {
+//     return (MapNode *)((uint8_t *)bucket->node + index8);
+// }
+
+// static inline MapNode *static_map_node_val8(MapBucket *bucket, size_t index8, size_t size_key)
+// {
+//     return (MapNode *)((uint8_t *)bucket->node + index8 + size_key);
+// }
+
 
 /////////////////////////////////////
 // GLOBAL FUNCTION IMPLEMENTATIONS //
@@ -104,10 +127,6 @@ size_t map_hash_djb2(uintptr_t *str)
 void map_free(Map *map)
 {
     if(!map) return;
-    // calculate size_tot of one element
-    size_t size_key = static_map_size_key(map);
-    size_t size_val = static_map_size_val(map);
-    size_t size_tot = size_key + size_val;
     // go over each slot
     for(size_t i = 0; i < map->slots; i++)
     {
@@ -115,11 +134,11 @@ void map_free(Map *map)
         for(size_t j = 0; j < bucket->used; j++)
         {
             // set key to zero
-            MapNode *node = (MapNode *)((uint8_t *)bucket->node + j * size_tot);
+            MapNode *node = static_map_node_key(map, bucket, j);
             if(map->fk) map->fk(&node->key_p);
             node->key_p = 0;
             // set val to zero
-            node = (MapNode *)((uint8_t *)node + size_key);
+            node = static_map_node_val(map, bucket, j);
             if(map->fv) map->fv(&node->val_p);
             node->val_p = 0;
         }
@@ -143,9 +162,9 @@ bool map_set(Map *map, uintptr_t key, uintptr_t val)
     if(!map) return false;
     bool result = true;
     // check if the key exists
-    size_t index8 = 0;
+    size_t index = 0;
     MapBucket *bucket = 0;
-    bool exist = static_map_indexing(map, key, &bucket, &index8);
+    bool exist = static_map_indexing(map, key, &bucket, &index);
     // calculate size_tot of one element
     size_t size_key = static_map_size_key(map);
     size_t size_val = static_map_size_val(map);
@@ -162,28 +181,29 @@ bool map_set(Map *map, uintptr_t key, uintptr_t val)
             if(!temp) return false;
             // initialize new memory
             bucket->node = temp;
-            memset((uint8_t *)bucket->node + bucket->used * size_tot, 0, map->batch * size_tot);
+            MapNode *node = static_map_node_key(map, bucket, bucket->used);
+            memset(node, 0, map->batch * size_tot);
         }
         // increment used
         bucket->used++;
     }
-    MapNode *node = (MapNode *)((uint8_t *)bucket->node + index8);
     // assign key
+    MapNode *node = static_map_node_key(map, bucket, index);
     if(map->size.key)
     {
         void *key_p = (void *)key;
         if(!key_p) return false;
-        if(map->av) result &= map->av(&node->key_p, key_p);
+        if(map->ak) result &= map->ak(&node->key_p, key_p);
         else memcpy(&node->key_p, key_p, map->size.key);
     }
     else node->key = key;
     // assign value
+    node = static_map_node_val(map, bucket, index);
     if(map->size.val)
     {
-        node = (MapNode *)((uint8_t *)node + size_key);
         void *val_p = (void *)val;
         if(!val_p) return false;
-        if(map->ak) result &= map->ak(&node->val_p, val_p);
+        if(map->av) result &= map->av(&node->val_p, val_p);
         else memcpy(&node->val_p, val_p, map->size.val);
     }
     else node->val = val;
@@ -204,17 +224,14 @@ bool map_get(Map *map, uintptr_t key, uintptr_t *val_p)
     if(!map || !val_p) return false;
     // check if the key exists
     bool result = true;
-    size_t index8 = 0;
+    size_t index = 0;
     MapBucket *bucket = 0;
-    bool exist = static_map_indexing(map, key, &bucket, &index8);
+    bool exist = static_map_indexing(map, key, &bucket, &index);
     if(!exist) return false;
-    size_t size_key = static_map_size_key(map);
-    MapNode *node = (MapNode *)((uint8_t *)bucket->node + index8);
-    // calculate size_tot of one element
     // assign to val_p if it does
+    MapNode *node = static_map_node_val(map, bucket, index);
     if(map->size.val)
     {
-        node = (MapNode *)((uint8_t *)node + size_key);
         // maybe don't copy the value, but just return the address??
         if(map->av) result &= map->av(val_p, &node->val_p);
         else memcpy(val_p, &node->val_p, map->size.val);
@@ -235,24 +252,24 @@ bool map_del(Map *map, uintptr_t key)
 {
     if(!map) return false;
     // check if the key exists
-    size_t index8 = 0;
+    size_t index = 0;
     MapBucket *bucket = 0;
-    bool exist = static_map_indexing(map, key, &bucket, &index8);
+    bool exist = static_map_indexing(map, key, &bucket, &index);
     if(!exist) return false;
     // calculate size_tot of one element
     size_t size_key = static_map_size_key(map);
     size_t size_val = static_map_size_val(map);
     size_t size_tot = size_key + size_val;
     // free val if it exists
-    MapNode *node = (MapNode *)((uint8_t *)bucket->node + index8 + size_key);
+    MapNode *node = static_map_node_val(map, bucket, index);
     if(map->fv) map->fv(&node->val_p);
     // free key if it exists (make this later, because then the node address is right)
-    node = (MapNode *)((uint8_t *)node - size_key);
+    node = static_map_node_key(map, bucket, index);
     if(map->fk) map->fk(&node->key_p);
     // this should never happen, but do check for it...
     if(!bucket->used) return false;
     // decrease used and calculate how many elements remain
-    size_t move_count = --bucket->used * size_tot - index8;
+    size_t move_count = (--bucket->used - index) * size_tot;
     // move memory in place
     if(move_count) memmove(node, (uint8_t *)node + size_tot, move_count);
     // set old memory to zero
@@ -294,16 +311,12 @@ bool map_iter(MapIter *map_it, uintptr_t *key_p, uintptr_t *val_p) // maybe make
         map_it->j = 0;
         map_it->i++;
     }
-    // calculate size_tot of one element
-    size_t size_key = static_map_size_key(map);
-    size_t size_val = static_map_size_val(map);
-    size_t size_tot = size_key + size_val;
     // make sure we're still in the map
     if(map_it->i >= map->slots) return false;
     // assign the key
     if(key_p)
     {
-        MapNode *node = (MapNode *)((uint8_t *)bucket->node + map_it->j * size_tot);
+        MapNode *node = static_map_node_key(map, bucket, map_it->j);
         if(map->size.key)
         {
             if(map->ak) result &= map->ak(key_p, &node->key_p);
@@ -314,10 +327,9 @@ bool map_iter(MapIter *map_it, uintptr_t *key_p, uintptr_t *val_p) // maybe make
     // assign the value
     if(val_p)
     {
-        MapNode *node = (MapNode *)((uint8_t *)bucket->node + map_it->j * size_tot);
+        MapNode *node = static_map_node_val(map, bucket, map_it->j);
         if(map->size.val)
         {
-            node = (MapNode *)((uint8_t *)node + size_key);
             if(map->av) result &= map->av(val_p, &node->val_p);
             else memcpy(val_p, &node->val_p, map->size.val);
         }

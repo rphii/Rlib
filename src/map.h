@@ -56,20 +56,21 @@ typedef void (*MapFree)(void *a);               // free a value; c equivalend: f
 // STRUCTS //
 /////////////
 
-typedef struct MapNode
+typedef union MapNode
 {
-    union
-    {
-        uintptr_t key;
-        void *key_p;
-        void *val_p;
-    };
-    union
-    {
-        uintptr_t val;
-    };
+    uintptr_t key;
+    uintptr_t val;
+    void *key_p;
+    void *val_p;
 }
 MapNode;
+
+typedef struct MapSize
+{
+    size_t key;
+    size_t val;
+}
+MapSize;
 
 typedef struct MapBucket
 {
@@ -81,7 +82,7 @@ MapBucket;
 typedef const struct Map
 {
     MapBucket *b;           // buckets/slots
-    MapNode size;           // size of key/val in bytes
+    MapSize size;           // size of key/val in bytes
     size_t slots, batch;    // nb of slots/batch
     MapHash hash;           // required; hashing function
     MapCmp cmp;             // optional; compare function
