@@ -182,7 +182,7 @@ bool map_set(Map *map, uintptr_t key, uintptr_t val)
     {
         void *key_p = (void *)key;
         if(!key_p) return false;
-        if(map->ak) result &= map->ak(&node->key_p, key_p);
+        if(map->ak) result &= (map->ak(&node->key_p, key_p) != 0);
         else memcpy(&node->key_p, key_p, map->size.key);
     }
     else node->key = key;
@@ -192,7 +192,7 @@ bool map_set(Map *map, uintptr_t key, uintptr_t val)
     {
         void *val_p = (void *)val;
         if(!val_p) return false;
-        if(map->av) result &= map->av(&node->val_p, val_p);
+        if(map->av) result &= (map->av(&node->val_p, val_p) != 0);
         else memcpy(&node->val_p, val_p, map->size.val);
     }
     else node->val = val;
@@ -222,7 +222,7 @@ bool map_get(Map *map, uintptr_t key, uintptr_t *val_p)
     if(map->size.val)
     {
         // maybe don't copy the value, but just return the address??
-        if(map->av) result &= map->av(val_p, &node->val_p);
+        if(map->av) result &= (map->av(val_p, &node->val_p) != 0);
         else memcpy(val_p, &node->val_p, map->size.val);
     }
     else *val_p = node->val;
@@ -306,7 +306,10 @@ bool map_iter(MapIter *map_it, uintptr_t *key_p, uintptr_t *val_p) // maybe make
         MapNode *node = static_map_node_key(map, bucket, map_it->j);
         if(map->size.key)
         {
-            if(map->ak) result &= map->ak(key_p, &node->key_p);
+            if(map->ak)
+            {
+                result &= (map->ak(key_p, &node->key_p) != 0);
+            }
             else memcpy(key_p, &node->key_p, map->size.key);
         }
         else *key_p = node->key;
@@ -317,7 +320,7 @@ bool map_iter(MapIter *map_it, uintptr_t *key_p, uintptr_t *val_p) // maybe make
         MapNode *node = static_map_node_val(map, bucket, map_it->j);
         if(map->size.val)
         {
-            if(map->av) result &= map->av(val_p, &node->val_p);
+            if(map->av) result &= (map->av(val_p, &node->val_p) != 0);
             else memcpy(val_p, &node->val_p, map->size.val);
         }
         else *val_p = node->val;
