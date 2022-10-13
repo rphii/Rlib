@@ -41,15 +41,15 @@ int main(void)
     {
         uintptr_t got = 0;
         bool exist = map_get(&m, (uintptr_t)&key, &got);
-        if(exist) printf("m[%.*s] = %d\n", (int)key.len, key.s, i);
-        else printf("m[%.*s] = (null)\n", (int)key.len, key.s);
+        if(exist) printf("m['%.*s'] = %d\n", (int)key.len, key.s, i);
+        else printf("m['%.*s'] = (null)\n", (int)key.len, key.s);
     }
     // at last, iterate over the map
     MapIter mi = MAP_ITER(&m);
     uintptr_t val;
     while(map_iter(&mi, (uintptr_t *)&key, &val))
     {
-        printf("iter: m[%.*s] = %d\n", (int)key.len, key.s, (int)val);
+        printf("iter: m['%.*s'] = %d\n", (int)key.len, key.s, (int)val);
     }
 
     rstr_free(&key);
