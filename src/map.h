@@ -62,11 +62,11 @@ typedef struct MapNode
     {
         uintptr_t key;
         void *key_p;
+        void *val_p;
     };
     union
     {
         uintptr_t val;
-        void *val_p;
     };
 }
 MapNode;
