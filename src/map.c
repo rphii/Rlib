@@ -21,11 +21,14 @@ static inline size_t static_map_size_val(Map *map)
     return map->size.val ? map->size.val : sizeof(map->b->node->val);
 }
 
+static inline size_t static_map_size_tot(Map *map)
+{
+    return static_map_size_key(map) + static_map_size_val(map);
+}
+
 static inline MapNode *static_map_node_key(Map *map, MapBucket *bucket, size_t index)
 {
-    size_t size_key = static_map_size_key(map);
-    size_t size_val = static_map_size_val(map);
-    size_t size_tot = size_key + size_val;
+    size_t size_tot = static_map_size_tot(map);
     return (MapNode *)((uint8_t *)bucket->node + index * size_tot);
 }
 
@@ -91,18 +94,6 @@ static bool static_map_indexing(Map *map, uintptr_t key, MapBucket **bucket, siz
     return exist;
 }
 
-
-// static inline MapNode *static_map_node_key8(MapBucket *bucket, size_t index8)
-// {
-//     return (MapNode *)((uint8_t *)bucket->node + index8);
-// }
-
-// static inline MapNode *static_map_node_val8(MapBucket *bucket, size_t index8, size_t size_key)
-// {
-//     return (MapNode *)((uint8_t *)bucket->node + index8 + size_key);
-// }
-
-
 /////////////////////////////////////
 // GLOBAL FUNCTION IMPLEMENTATIONS //
 /////////////////////////////////////
@@ -166,9 +157,7 @@ bool map_set(Map *map, uintptr_t key, uintptr_t val)
     MapBucket *bucket = 0;
     bool exist = static_map_indexing(map, key, &bucket, &index);
     // calculate size_tot of one element
-    size_t size_key = static_map_size_key(map);
-    size_t size_val = static_map_size_val(map);
-    size_t size_tot = size_key + size_val;
+    size_t size_tot = static_map_size_tot(map);
     // add node if not exist
     if(!exist)
     {
@@ -257,9 +246,7 @@ bool map_del(Map *map, uintptr_t key)
     bool exist = static_map_indexing(map, key, &bucket, &index);
     if(!exist) return false;
     // calculate size_tot of one element
-    size_t size_key = static_map_size_key(map);
-    size_t size_val = static_map_size_val(map);
-    size_t size_tot = size_key + size_val;
+    size_t size_tot = static_map_size_tot(map);
     // free val if it exists
     MapNode *node = static_map_node_val(map, bucket, index);
     if(map->fv) map->fv(&node->val_p);
