@@ -18,3 +18,4 @@ Commonly used functions by rphii.
 - [`map2_ex`](examples/map2_ex.c) Using Map with custom structure `Map<Rstr,Rstr>`
 - [`map3_ex`](examples/map3_ex.c) Using Map with mixed structure `Map<int,Rstr>`
 - [`map4_ex`](examples/map4_ex.c) Using Map with mixed structure `Map<Rstr,int>`
+- [`map5_ex`](examples/map5_ex.c) Using Map with basic types `Map<char[],int>`
