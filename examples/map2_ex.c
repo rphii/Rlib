@@ -28,7 +28,7 @@ int main(void)
 
     Rstr key = {0};
     Rstr val = {0};
-    int amount = 10000;
+    int amount = 1000;
     // first of all, set some keys
     for(int i = 0; i < amount; i++)
     {
