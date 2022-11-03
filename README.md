@@ -2,6 +2,9 @@
 
 Commonly used functions by rphii.
 
+## How to compile
+See https://github.com/rphii/bd.
+
 ## Library
 | Header                   | Source                   | Description                                |
 |--------------------------|--------------------------|--------------------------------------------|
