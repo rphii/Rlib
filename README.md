@@ -11,7 +11,7 @@ See https://github.com/rphii/bd.
 | [`rstr.h`](src/rstr.h)   | [`rstr.c`](src/rstr.c)   | basic, quite versatile string structure    |
 | [`r2str.h`](src/r2str.h) | [`r2str.c`](src/r2str.c) | handy for fast formattet text file output  |
 | [`rfile.h`](src/rfile.h) | [`rfile.c`](src/rfile.c) | basic file input / output                  |
-| [`map.h`](src/map.h)     | [`map.c`](src/map.c)     | generic map / dicionary                    |
+| [`map.h`](src/map.h)     | [`map.c`](src/map.c)     | generic map / dictionary                   |
 
 ## Examples
 - [`rstr_ex`](examples/rstr_ex.c) Basic usage of Rstr
