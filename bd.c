@@ -280,6 +280,7 @@ static void prj_print(Bd *bd, Prj *p, bool simple) /* TODO list if they're up to
     free(srcfs);
     free(targets);
     if(simple) return;
+    /* print the configuration */
     printf("  cflgs = %s\n", p->cflgs);
     printf("  lopts = %s\n", p->lopts);
     printf("  llibs = %s\n", p->llibs);
@@ -440,49 +441,40 @@ static uint64_t modlibs(Bd *bd, char *llibs)
 {
     if(!llibs) return 0;
     int llibs_len = strlen(llibs);
-    /* filter out paths (-L= flag) */
-    char *lpath = llibs;
-    StrArr *lpaths = strarr_new();
-    if(!lpaths) BD_ERR(bd, 0, "Failed to create string array");
-    while(*lpath) {
-        lpath = strstr(lpath, "-L=");
-        if(!lpath) break;
-        lpath += 3; /* "-L=" */
-        char *space = memchr(lpath, ' ', llibs + llibs_len - lpath);
-        space = space ? space : lpath + llibs_len;
-        if(!strarr_set_n(lpaths, lpaths->n + 1)) BD_ERR(bd, 0, "Failed to modify StrArr");
-        lpaths->s[lpaths->n - 1] = strprf("%.*s", (int)(space - lpath), lpath);
-        lpath = space + 1;
+    /* extract paths / names from llibs */
+    char *find[] = {"-L", "-l"};
+    StrArr *arr_Ll[] = {strarr_new(), strarr_new()};
+    for(int i = 0; i < SIZE_ARRAY(arr_Ll); i++) {
+        char *search = llibs;
+        if(!arr_Ll[i]) BD_ERR(bd, 0, "Failed to create string array");
+        while(*search) {
+            search = strstr(search, find[i]);
+            if(!search) break;
+            search += strlen(find[i]) + 1;
+            char *space = memchr(search, ' ', llibs + llibs_len - search);
+            space = space ? space : search + llibs_len;
+            if(!strarr_set_n(arr_Ll[i], arr_Ll[i]->n + 1)) BD_ERR(bd, 0, "Failed to modify StrArr");
+            arr_Ll[i]->s[arr_Ll[i]->n - 1] = strprf("%.*s", (int)(space - search), search);
+            search = space + 1;
+        }
     }
-    /* filter out names (-l= flag)*/
-    char *lname = llibs;
-    StrArr *lnames = strarr_new();
-    if(!lnames) BD_ERR(bd, 0, "Failed to create string array");
-    while(*lname) {
-        lname = strstr(lname, "-l=");
-        if(!lname) break;
-        lname += 3; /* "-l= "*/
-        char *space = memchr(lname, ' ', llibs + llibs_len - lname);
-        space = space ? space : lpath + llibs_len;
-        if(!strarr_set_n(lnames, lnames->n + 1)) BD_ERR(bd, 0, "Failed to modify StrArr");
-        lnames->s[lnames->n - 1] = strprf("%.*s", (int)(space - lname), lname);
-        lpath = space + 1;
-    }
-    /* check if library changed */
+    /* finally get the most recent modified time */
     uint64_t recent = 0;
-    for(int i = 0; i < lpaths->n; i++) {
-        for(int j = 0; j < lnames->n; j++) {
-            char *libstatic = strprf("%s%slib%s%s", lpaths->s[i], SLASH_STR, lnames->s[j], static_ext[BUILD_STATIC]);
-            char *libshared = strprf("%s%slib%s%s", lpaths->s[i], SLASH_STR, lnames->s[j], static_ext[BUILD_SHARED]);
+    for(int i = 0; i < arr_Ll[0]->n; i++) {
+        for(int j = 0; j < arr_Ll[1]->n; j++) {
+            char *libstatic = strprf("%s%slib%s%s", arr_Ll[0]->s[i], SLASH_STR, arr_Ll[1]->s[j], static_ext[BUILD_STATIC]);
+            char *libshared = strprf("%s%slib%s%s", arr_Ll[0]->s[i], SLASH_STR, arr_Ll[1]->s[j], static_ext[BUILD_SHARED]);
             uint64_t modstatic = modtime(bd, libstatic);
             uint64_t modshared = modtime(bd, libshared);
             recent = modstatic > recent ? modstatic : recent;
             recent = modshared > recent ? modshared : recent;
         }
     }
-
-    free(lpaths);
-    free(lnames);
+    /* free all used arrs */
+    for(int i = 0; i < SIZE_ARRAY(arr_Ll); i++) {
+        strarr_free(arr_Ll[i]);
+        free(arr_Ll[i]);
+    }
     return recent;
 }
 
@@ -495,6 +487,7 @@ static void makedir(const char *dirname)
    mkdir(dirname, 0700);
 #endif
 }
+/* TODO FIX */
 static void makedirs(Bd *bd, char *dirnames, bool skiplast)
 {
     /* go over dirnames and split by '/' */
@@ -558,11 +551,6 @@ static void build(Bd *bd, Prj *p)
     if(!depfs) BD_ERR(bd,, "No dependency files");
     StrArr *targets = prj_names(bd, p, srcfs);
     if(!targets) BD_ERR(bd,, "No targets to build");
-    /* sanity check */
-    // for(int i = 0; i < srcfs->n; i++) printf("SRCF [%s]\n", srcfs->s[i]);
-    // for(int i = 0; i < objfs->n; i++) printf("OBJF [%s]\n", objfs->s[i]);
-    // for(int i = 0; i < depfs->n; i++) printf("DEPF [%s]\n", depfs->s[i]);
-    // for(int i = 0; i < targets->n; i++) printf("PRJN [%s]\n", targets->s[i]);
     /* now compile it */
     for(int k = 0; k < targets->n; k++) {
         /* maybe check if target even exists */
@@ -619,6 +607,17 @@ static void build(Bd *bd, Prj *p)
     return;
 }
 
+static StrArr *prj_srcfs(Bd *bd, Prj *p)
+{
+    StrArr *result = 0;
+    for(int k = 0; k < p->srcf.n && !bd->error; k++) {
+        char *cmd = strprf(FIND(p->srcf.s[k]));
+        result = parse_pipe(bd, cmd);
+        if(!result) BD_ERR(bd, 0, "Pipe returned nothing");
+        free(cmd);
+    }
+    return result;
+}
 static StrArr *prj_names(Bd *bd, Prj *p, StrArr *srcfs)
 {
     StrArr *result = strarr_new();
@@ -635,17 +634,6 @@ static StrArr *prj_names(Bd *bd, Prj *p, StrArr *srcfs)
             if(!strarr_set_n(result, result->n + 1)) BD_ERR(bd, 0, "Failed to modify StrArr");
             result->s[result->n - 1] = strprf("%s%s%.*s", p->name ? p->name : "", p->name ? SLASH_STR : "", ext - dir - 1, &srcfs->s[i][dir + 1]);
         }
-    }
-    return result;
-}
-static StrArr *prj_srcfs(Bd *bd, Prj *p)
-{
-    StrArr *result = 0;
-    for(int k = 0; k < p->srcf.n && !bd->error; k++) {
-        char *cmd = strprf(FIND(p->srcf.s[k]));
-        result = parse_pipe(bd, cmd);
-        if(!result) BD_ERR(bd, 0, "Pipe returned nothing");
-        free(cmd);
     }
     return result;
 }
