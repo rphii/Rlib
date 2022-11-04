@@ -715,13 +715,13 @@ static void bd_execute(Bd *bd, CmdList cmd)
     Prj p[] = {{
         .type = BUILD_STATIC,
         .name = "librlib",
-        .objd = "obj",
+        .objd = "obj/lib",
         .srcf = D("src/*.c"),
         .cflgs = "-Wall",
     }, {
         .type = BUILD_EXAMPLES,
         .name = "bin",
-        .objd = "obj",
+        .objd = "obj/examples",
         .srcf = D("examples/*.c"),
         .cflgs = "-Wall",
         .llibs = "-L=. -l=rlib",
