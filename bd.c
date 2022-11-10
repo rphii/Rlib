@@ -109,6 +109,7 @@ SOFTWARE. */
 #define BD_ERR(bd,retval,...)  do { if(!bd->noerr) { printf("\033[91m[ERROR:%d]\033[0m ", __LINE__); printf(__VA_ARGS__); printf("\n"); } bd->error = __LINE__; return retval; } while(0)
 #define BD_MSG(bd,...)  if(!bd->quiet) { printf(__VA_ARGS__); printf("\n"); }
 #define SIZE_ARRAY(x)   (sizeof(x)/sizeof(*x))
+#define strarr_free_p(x)    do { strarr_free(x); free(x); x = 0; } while(0)
 
 /* structs */
 
@@ -152,7 +153,7 @@ static const char *cmdsinfo[CMD__COUNT] = {
     "Also makes errors quiet",
 };
 
-typedef struct {
+typedef struct Bd {
     StrArr ofiles;
     int error;
     int count;
@@ -288,10 +289,8 @@ static void prj_print(Bd *bd, Prj *p, bool simple) /* TODO list if they're up to
 
     /* print all names */
     for(int i = 0; i < targets->n; i++) printf("%-7s : [%s]\n", static_build_str[p->type], targets->s[i]);
-    strarr_free(srcfs);
-    strarr_free(targets);
-    free(srcfs);
-    free(targets);
+    strarr_free_p(srcfs);
+    strarr_free_p(targets);
     if(simple) return;
     /* print the configuration */
     printf("  cflgs = %s\n", p->cflgs);
@@ -421,7 +420,7 @@ static uint64_t modtime(Bd *bd, const char *filename)
     return result.QuadPart;
 #elif defined(OS_CYGWIN) || defined(OS_APPLE) || defined(OS_ANDROID) || defined(OS_LINUX) || defined(OS_POSIX)
     struct stat attr;
-    if(stat(filename, &attr) == -1) return 0;
+    if(stat(filename, &attr) == -1) BD_ERR(bd, 0, "%s: Failed to get stat", filename);
     return (uint64_t)attr.st_ctime;
 #endif
 }
@@ -462,8 +461,7 @@ static uint64_t modlibs(Bd *bd, char *llibs)
     }
     /* free all used arrs */
     for(int i = 0; i < (int)SIZE_ARRAY(arr_Ll); i++) {
-        strarr_free(arr_Ll[i]);
-        free(arr_Ll[i]);
+        strarr_free_p(arr_Ll[i]);
     }
     return recent;
 }
@@ -577,8 +575,7 @@ static void build(Bd *bd, Prj *p)
                     if(!strarr_set_n(&bd->ofiles, bd->ofiles.n + 1)) BD_ERR(bd,, "Failed to modify StrArr");
                     bd->ofiles.s[bd->ofiles.n - 1] = strprf(0, "%s", objfs->s[i]);
                 }
-                strarr_free(hdrfs);
-                free(hdrfs);
+                strarr_free_p(hdrfs);
             } else {
                 compile(bd, p, targets->s[k], objfs->s[i], srcfs->s[i]);
             }
@@ -588,18 +585,12 @@ static void build(Bd *bd, Prj *p)
     }
     if(p->type != BUILD_EXAMPLES) link(bd, p, targets->s[0]);
     /* clean up memory used */
-    strarr_free(dirn);
-    strarr_free(diro);
-    strarr_free(srcfs);
-    strarr_free(objfs);
-    strarr_free(depfs);
-    strarr_free(targets);
-    free(dirn);
-    free(diro);
-    free(srcfs);
-    free(objfs);
-    free(depfs);
-    free(targets);
+    strarr_free_p(dirn);
+    strarr_free_p(diro);
+    strarr_free_p(srcfs);
+    strarr_free_p(objfs);
+    strarr_free_p(depfs);
+    strarr_free_p(targets);
     return;
 }
 
@@ -687,25 +678,21 @@ static void clean(Bd *bd, Prj *p)
         delfiles = strprf(delfiles, noerr);
         delfolds = strprf(delfolds, noerr);
         BD_MSG(bd, "[\033[95m%s\033[0m] %s", targets->s[k], delfiles); /* bright magenta */
-        system(delfiles);
+        int sysret = system(delfiles);
+        if(sysret == -1) BD_ERR(bd,, "System failed deleting files");
         BD_MSG(bd, "[\033[95m%s\033[0m] %s", targets->s[k], delfolds); /* bright magenta */
-        system(delfolds);
+        sysret = system(delfolds);
+        if(sysret == -1) BD_ERR(bd,, "System failed deleting folders");
         free(delfiles);
         free(delfolds);
     }
     /* clean up memory used */
-    strarr_free(dirn);
-    strarr_free(diro);
-    strarr_free(srcfs);
-    strarr_free(objfs);
-    strarr_free(depfs);
-    strarr_free(targets);
-    free(dirn);
-    free(diro);
-    free(srcfs);
-    free(objfs);
-    free(depfs);
-    free(targets);
+    strarr_free_p(dirn);
+    strarr_free_p(diro);
+    strarr_free_p(srcfs);
+    strarr_free_p(objfs);
+    strarr_free_p(depfs);
+    strarr_free_p(targets);
 }
 
 static void bd_execute(Bd *bd, CmdList cmd)
