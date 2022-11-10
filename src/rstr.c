@@ -1,4 +1,5 @@
 #include <string.h>
+#include <ctype.h>
 #include "rstr.h"
 
 /////////////////////////////////
@@ -28,6 +29,7 @@ static void static_rstr_zero(Rstr *rstr)
 /////////////////////////////////////
 // PUBLIC FUNCTION IMPLEMENTATIONS //
 /////////////////////////////////////
+
 
 /**
  * @brief free an Rstr's used memory
@@ -68,7 +70,7 @@ bool rstr_append(Rstr *rstr, char *format, ...)
     // calculate length of append string
     va_list argp;
     va_start(argp, format);
-    size_t len_app = vsnprintf(0, 0, format, argp);
+    int len_app = vsnprintf(0, 0, format, argp);
     va_end(argp);
 
     // calculate required memory
@@ -80,15 +82,15 @@ bool rstr_append(Rstr *rstr, char *format, ...)
     {
         char *temp = realloc(rstr->s, required);
         // safety check
-        if(!temp) return false;
         // apply address and set new allocd
+        if(!temp) return false;
         rstr->s = temp;
         rstr->allocd = required;
     }
 
     // actual append
     va_start(argp, format);
-    size_t len_chng = vsnprintf(&(rstr->s)[rstr->len], len_app + 1, format, argp);
+    int len_chng = vsnprintf(&(rstr->s)[rstr->len], len_app + 1, format, argp);
     va_end(argp);
     // check for success
     if(len_chng >= 0 && len_chng <= len_app) rstr->len += len_chng; // successful, change length
@@ -110,9 +112,9 @@ bool rstr_append_va(Rstr *rstr, char *format, va_list argp)
 {
     if(!rstr) return false;
 
-    va_list argl = 0;
+    va_list argl;
     va_copy(argl, argp); /* TODO check for error */
-    size_t len_app = vsnprintf(0, 0, format, argl);
+    int len_app = vsnprintf(0, 0, format, argl);
     va_end(argl);
     
     // calculate required memory
@@ -129,9 +131,9 @@ bool rstr_append_va(Rstr *rstr, char *format, va_list argp)
         rstr->s = temp;
         rstr->allocd = required;
     }
-
+    
     // actual append
-    size_t len_chng = vsnprintf(&(rstr->s)[rstr->len], len_app + 1, format, argp);
+    int len_chng = vsnprintf(&(rstr->s)[rstr->len], len_app + 1, format, argp);
 
     // check for success
     if(len_chng >= 0 && len_chng <= len_app) rstr->len += len_chng; // successful, change length
@@ -190,4 +192,47 @@ bool rstr_cpy(Rstr *a, Rstr *b)
     bool result = rstr_append(a, "%.*s", (int)b->len, b->s);
     // printf("rstr_cpy:a->s:%s / a->len = %zu\n", a->s, a->len);
     return result;
+}
+
+bool rstr_ncpy(Rstr *a, Rstr *b, size_t n)
+{
+    if(!a || !b) return false;
+    // printf("rstr_cpy:b->s:%s / a->len = %zu\n", b->s, a->len);
+    rstr_recycle(a);
+    a->blocksize = b->blocksize;
+    size_t m = n < b->len ? n : b->len;
+    bool result = rstr_append(a, "%.*s", m, b->s);
+    // printf("rstr_cpy:a->s:%s / a->len = %zu\n", a->s, a->len);
+    return result;
+}
+
+ssize_t rstr_find(const Rstr *str, const Rstr *sub)
+{
+    if(!str || !sub) return -1;
+    if(sub->len > str->len) return -1;
+    char *found = strstr(str->s, sub->s);
+    if(!found) return -1;
+    return found - str->s;
+}
+
+void rstr_upper(const Rstr *str)
+{
+    if(!str) return;
+    char *c = str->s;
+    for(size_t i = 0; i < str->len; i++)
+    {
+        *c = toupper(*c);
+        c++;
+    }
+}
+
+void rstr_lower(const Rstr *str)
+{
+    if(!str) return;
+    char *c = str->s;
+    for(size_t i = 0; i < str->len; i++)
+    {
+        *c = tolower(*c);
+        c++;
+    }
 }
