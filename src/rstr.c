@@ -72,7 +72,7 @@ bool rstr_append(Rstr *rstr, char *format, ...)
     va_start(argp, format);
     int len_app = vsnprintf(0, 0, format, argp);
     va_end(argp);
-
+    
     // calculate required memory
     size_t len_new = rstr->len + len_app;
     size_t required = rstr->allocd ? rstr->allocd : RSTR_DEFAULT_BLOCKSIZE;
@@ -119,8 +119,9 @@ bool rstr_append_va(Rstr *rstr, char *format, va_list argp)
     va_end(argl);
     
     // calculate required memory
-    size_t blocksize = rstr->blocksize ? rstr->blocksize : RSTR_DEFAULT_BLOCKSIZE;
-    size_t required = blocksize * ((len_app + rstr->len + 1) / blocksize + 1);
+    size_t len_new = rstr->len + len_app;
+    size_t required = rstr->allocd ? rstr->allocd : RSTR_DEFAULT_BLOCKSIZE;
+    while(required < len_new) required = required << 1;
 
     // make sure to have enough memory
     if(required > rstr->allocd)
