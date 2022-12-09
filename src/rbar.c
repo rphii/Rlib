@@ -35,6 +35,6 @@ void rbar_init(Rbar *bar, size_t n, size_t m)
  */
 void rbar_show(Rbar *bar, size_t n, size_t m)
 {
-    rbar_prog(bar, n + 1, m);
+    rbar_init(bar, n + 1, m);
 }
 
