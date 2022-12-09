@@ -1,48 +1,4 @@
-#ifndef RGBIO_H
-
-#if 0
-#include <stdarg.h>
-
-#include "rstr.h"
-#include "try.h"
-
-#define RGBIO_RESET         "#[reset]"
-#define RGBIO_BOLD          "#[bold]"
-#define RGBIO_UNDERLINE     "#[underline]"
-#define RGBIO_FOREGROUND    "#[foreground]"
-#define RGBIO_BACKGROUND    "#[background]"
-
-#define RGBIO_BLACK     "#[blue]"
-#define RGBIO_RED       "#[red]"
-#define RGBIO_GREEN     "#[green]"
-#define RGBIO_YELLOW    "#[yellow]"
-#define RGBIO_BLUE      "#[blue]"
-#define RGBIO_MAGENTA   "#[magenta]"
-#define RGBIO_CYAN      "#[cyan]"
-#define RGBIO_WHITE     "#[white]"
-
-
-#define RGBIO_RS    "#[rs]"
-#define RGBIO_BO    "#[bo]"
-#define RGBIO_UL    "#[ul]"
-#define RGBIO_FG    "#[fg]"
-#define RGBIO_BG    "#[bg]"
-
-#define RGBIO_BK    "#[bl]"
-#define RGBIO_RD    "#[rd]"
-#define RGBIO_GN    "#[gn]"
-#define RGBIO_YL    "#[yl]"
-#define RGBIO_BL    "#[bl]"
-#define RGBIO_MG    "#[mg]"
-#define RGBIO_CY    "#[cy]"
-#define RGBIO_WT    "#[wt]"
-
-#define RGBIO_RGB(rd,gn,bl) "#[r"rd"g"gn"b"bl"]"
-
-void rgbio_printf(char *fmt, ...);
-void rgbio_fprintf();
-void rgbio_snprintf();
-#endif
+#ifndef RGBF_H
 
 #define F(msg,fmt) "\033["fmt"m"msg"\033[0m"
 
@@ -94,5 +50,5 @@ void rgbio_snprintf();
 #define RGBF(rgb)   ";38;2;"rgb   /* string like "255;10;45" */
 #define RGBB(rgb)   ";48;2;"rgb   /* string like "255;10;45" */
 
-#define RGBIO_H
+#define RGBF_H
 #endif
