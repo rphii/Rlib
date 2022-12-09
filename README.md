@@ -12,7 +12,7 @@ See https://github.com/rphii/bd.
 | [`r2str.h`](src/r2str.h) | [`r2str.c`](src/r2str.c) | handy for fast formattet text file output  |
 | [`rfile.h`](src/rfile.h) | [`rfile.c`](src/rfile.c) | basic file input / output                  |
 | [`map.h`](src/map.h)     | [`map.c`](src/map.c)     | generic map / dictionary                   |
-| [`try.h`](src/try.h)     | [`try.c](src/try.c)      | try, catch, throw, error, warn (all macros)|
+| [`try.h`](src/try.h)     | [`try.c`](src/try.c)      | try, catch, throw, error, warn (all macros)|
 
 ## Examples
 - [`rstr_ex`](examples/rstr_ex.c) Basic usage of Rstr
