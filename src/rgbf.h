@@ -7,44 +7,44 @@
 #define UL      ";4"     /* underline */
 
 /* === dimmed foreground colors === */
-#define BK_DF ";30"    /* black */
-#define RD_DF ";31"    /* red */
-#define GN_DF ";32"    /* green */
-#define YL_DF ";33"    /* yellow */
-#define BL_DF ";34"    /* blue */
-#define MG_DF ";35"    /* magenta */
-#define CY_DF ";36"    /* cyan */
-#define WT_DF ";37"    /* white */
+#define F_KD ";30"    /* black dimmed foreground */
+#define F_RD ";31"    /* red dimmed foreground */
+#define F_GD ";32"    /* green dimmed foreground */
+#define F_YD ";33"    /* yellow dimmed foreground */
+#define F_BD ";34"    /* blue dimmed foreground */
+#define F_MD ";35"    /* magenta dimmed foreground */
+#define F_CD ";36"    /* cyan dimmed foreground */
+#define F_WD ";37"    /* white dimmed foreground */
 
 /* === dimmed background colors === */
-#define BK_DB ";40"    /* black */
-#define RD_DB ";41"    /* red */
-#define GN_DB ";42"    /* green */
-#define YL_DB ";43"    /* yellow */
-#define BL_DB ";44"    /* blue */
-#define MG_DB ";45"    /* magenta */
-#define CY_DB ";46"    /* cyan */
-#define WT_DB ";47"    /* white */
+#define F_Kd ";40"    /* black dimmed background */
+#define F_Rd ";41"    /* red dimmed background */
+#define F_Gd ";42"    /* green dimmed background */
+#define F_Yd ";43"    /* yellow dimmed background */
+#define F_Bd ";44"    /* blue dimmed background */
+#define F_Md ";45"    /* magenta dimmed background */
+#define F_Cd ";46"    /* cyan dimmed background */
+#define F_Wd ";47"    /* white dimmed background */
 
 /* === bright foreground colors === */
-#define BK_BF ";90"    /* black */
-#define RD_BF ";91"    /* red */
-#define GN_BF ";92"    /* green */
-#define YL_BF ";93"    /* yellow */
-#define BL_BF ";94"    /* blue */
-#define MG_BF ";95"    /* magenta */
-#define CY_BF ";96"    /* cyan */
-#define WT_BF ";97"    /* white */
+#define F_KB ";90"    /* black bright foreground */
+#define F_RB ";91"    /* red bright foreground */
+#define F_GB ";92"    /* green bright foreground */
+#define F_YB ";93"    /* yellow bright foreground */
+#define F_BB ";94"    /* blue bright foreground */
+#define F_MB ";95"    /* magenta bright foreground */
+#define F_CB ";96"    /* cyan bright foreground */
+#define F_WB ";97"    /* white bright foreground */
 
 /* === bright background colors === */
-#define BK_BB ";100"    /* black */
-#define RD_BB ";101"    /* red */
-#define GN_BB ";102"    /* green */
-#define YL_BB ";103"    /* yellow */
-#define BL_BB ";104"    /* blue */
-#define MG_BB ";105"    /* magenta */
-#define CY_BB ";106"    /* cyan */
-#define WT_BB ";107"    /* white */
+#define F_Kb ";100"    /* black bright background */
+#define F_Rb ";101"    /* red bright background */
+#define F_Gb ";102"    /* green bright background */
+#define F_Yb ";103"    /* yellow bright background */
+#define F_Bb ";104"    /* blue bright background */
+#define F_Mb ";105"    /* magenta bright background */
+#define F_Cb ";106"    /* cyan bright background */
+#define F_Wb ";107"    /* white bright background */
 
 /* === red-green-blue === */
 #define RGBF(rgb)   ";38;2;"rgb   /* string like "255;10;45" */
