@@ -2,6 +2,7 @@
 #include <time.h>
 #include <ctype.h>
 #include "../src/rfile.h"
+#include "../src/rbar.h"
 
 #define BYTES   250000000
 #define FILENAME "Writecomp"
@@ -12,32 +13,42 @@ int main(void)
 {
     char *str = malloc(BYTES);
     if(!str) return 0;
-    
+
     // create the strings
     printf("Creating the string....\n");
+    Rbar bar = RBAR(0);
+    rbar_init(&bar, 0, BYTES);
     for(size_t i = 0; i < BYTES; i++)
     {
         // get a random character
         char c = 0;
         while(!isgraph(c)) c = rand() % 256;
         str[i] = c;
+        rbar_show(&bar, i, BYTES);
     }
+    printf("\n");
     printf("Created the string, we will now write to the files...\n");
     // write in chunk mode
     printf("Writing to %s...\n", FILENAME"_chunk.txt");
     clock_t t_0_chunk = clock();
+    rbar_init(&bar, 0, WRITETIMES);
     for(size_t i = 0; i < WRITETIMES; i++)
     {
         rfile_write(FILENAME"_chunk.txt", str, BYTES, CHUNK_SIZE);
+        rbar_show(&bar, i, WRITETIMES);
     }
+    printf("\n");
     clock_t t_E_chunk = clock();
     // write in bulk mode
     printf("Writing to %s...\n", FILENAME"_bulk.txt");
     clock_t t_0_bulk = clock();
+    rbar_init(&bar, 0, WRITETIMES);
     for(size_t i = 0; i < WRITETIMES; i++)
     {
         rfile_write(FILENAME"_bulk.txt", str, BYTES, 0);
+        rbar_show(&bar, i, WRITETIMES);
     }
+    printf("\n");
     clock_t t_E_bulk = clock();
     free(str);
 
