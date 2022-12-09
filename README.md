@@ -12,6 +12,7 @@ See https://github.com/rphii/bd.
 | [`r2str.h`](src/r2str.h) | [`r2str.c`](src/r2str.c) | handy for fast formattet text file output  |
 | [`rfile.h`](src/rfile.h) | [`rfile.c`](src/rfile.c) | basic file input / output                  |
 | [`map.h`](src/map.h)     | [`map.c`](src/map.c)     | generic map / dictionary                   |
+| [`try.h`](src/try.h)     | [`try.c](src/try.c)      | try, catch, throw, error, warn (all macros)|
 
 ## Examples
 - [`rstr_ex`](examples/rstr_ex.c) Basic usage of Rstr
@@ -22,3 +23,4 @@ See https://github.com/rphii/bd.
 - [`map3_ex`](examples/map3_ex.c) Using Map with mixed structure `Map<int,Rstr>`
 - [`map4_ex`](examples/map4_ex.c) Using Map with mixed structure `Map<Rstr,int>`
 - [`map5_ex`](examples/map5_ex.c) Using Map with basic types `Map<char[],int>`
+- [`try_ex`](examples/try_ex.c) Example using try, catch, throw, error and warn
